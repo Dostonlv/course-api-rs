@@ -7,15 +7,14 @@ pub struct Instructor {
     pub id: i64,
     pub full_name: String,
     pub email: String,
-    pub expertise: String,
+    pub expertise: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct CreateInstructor {
     pub full_name: String,
     pub email: String,
-    pub expertise: String,
+    pub expertise: Option<String>,
 }
-
 
 pub type UpdateInstructor = CreateInstructor;
