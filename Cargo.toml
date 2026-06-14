@@ -23,3 +23,4 @@ tokio = { version = "1.52.3", features = ["full", "rt-multi-thread", "macros"] }
 tracing = "0.1.44"
 utoipa = { version = "5", features = ["chrono"] }
 chrono = { version = "0.4", features = ["serde"] }
+utoipa-swagger-ui = { version = "9", features = ["axum"] }

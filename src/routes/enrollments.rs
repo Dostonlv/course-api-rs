@@ -1,7 +1,7 @@
 use crate::{
-    db::courses::CourseRepo,
+    db::enrollments::EnrolmentRepo,
     entities::{
-        courses::{Course, CreateCourse},
+        enrollments::{CreateEnrolment, Enrolment},
         repository::Repository,
     },
     routes::{AppError, AppState, Data},
@@ -16,27 +16,29 @@ use std::sync::Arc;
 
 pub fn router() -> Router<Arc<AppState>> {
     Router::new()
-        .route("/", get(get_all).post(create_course))
+        .route("/", get(get_all).post(create_enrolment))
         .route(
             "/{id}",
-            get(get_course).put(update_course).delete(delete_course),
+            get(get_enrolment)
+                .put(update_enrolment)
+                .delete(delete_enrolment),
         )
 }
 
 #[utoipa::path(
     post,
-    path = "/courses",
-    request_body = CreateCourse,
+    path = "/enrollments",
+    request_body = CreateEnrolment,
     responses(
-        (status = 200, description = "Course created", body = Course),
+        (status = 200, description = "Enrolment created", body = i64),
         (status = 400, description = "Bad request"),
     )
 )]
-pub async fn create_course(
+pub async fn create_enrolment(
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<CreateCourse>,
+    Json(payload): Json<CreateEnrolment>,
 ) -> Result<Json<i64>, AppError> {
-    let id = CourseRepo::create(&state.pool, &payload)
+    let id = EnrolmentRepo::create(&state.pool, &payload)
         .await
         .map_err(|err| AppError {
             status_code: StatusCode::BAD_REQUEST,
@@ -50,18 +52,18 @@ pub async fn create_course(
 
 #[utoipa::path(
     get,
-    path = "/courses/{id}",
-    params(("id" = i64, Path, description = "Course ID")),
+    path = "/enrollments/{id}",
+    params(("id" = i64, Path, description = "Enrolment ID")),
     responses(
-        (status = 200, description = "Course found", body = Course),
-        (status = 404, description = "Course not found"),
+        (status = 200, description = "Enrolment found", body = Enrolment),
+        (status = 404, description = "Enrolment not found"),
     )
 )]
-pub async fn get_course(
+pub async fn get_enrolment(
     State(state): State<Arc<AppState>>,
     Path(id): Path<i64>,
-) -> Result<Json<Course>, AppError> {
-    let course = CourseRepo::get_by_id(&state.pool, id)
+) -> Result<Json<Enrolment>, AppError> {
+    let enrolment = EnrolmentRepo::get_by_id(&state.pool, id)
         .await
         .map_err(|err| AppError {
             status_code: StatusCode::BAD_REQUEST,
@@ -70,12 +72,12 @@ pub async fn get_course(
             }),
         })?;
 
-    match course {
-        Some(c) => Ok(Json(c)),
+    match enrolment {
+        Some(e) => Ok(Json(e)),
         None => Err(AppError {
             status_code: StatusCode::NOT_FOUND,
             data: Json(Data {
-                message: String::from("Course not found"),
+                message: String::from("Enrolment not found"),
             }),
         }),
     }
@@ -83,13 +85,13 @@ pub async fn get_course(
 
 #[utoipa::path(
     get,
-    path = "/courses",
+    path = "/enrollments",
     responses(
-        (status = 200, description = "List of courses", body = Vec<Course>),
+        (status = 200, description = "List of enrolments", body = Vec<Enrolment>),
     )
 )]
-pub async fn get_all(State(state): State<Arc<AppState>>) -> Result<Json<Vec<Course>>, AppError> {
-    let courses = CourseRepo::get_all(&state.pool)
+pub async fn get_all(State(state): State<Arc<AppState>>) -> Result<Json<Vec<Enrolment>>, AppError> {
+    let enrolments = EnrolmentRepo::get_all(&state.pool)
         .await
         .map_err(|err| AppError {
             status_code: StatusCode::BAD_REQUEST,
@@ -98,25 +100,25 @@ pub async fn get_all(State(state): State<Arc<AppState>>) -> Result<Json<Vec<Cour
             }),
         })?;
 
-    Ok(Json(courses))
+    Ok(Json(enrolments))
 }
 
 #[utoipa::path(
     put,
-    path = "/courses/{id}",
-    params(("id" = i64, Path, description = "Course ID")),
-    request_body = CreateCourse,
+    path = "/enrollments/{id}",
+    params(("id" = i64, Path, description = "Enrolment ID")),
+    request_body = CreateEnrolment,
     responses(
-        (status = 200, description = "Course updated", body = i64),
-        (status = 404, description = "Course not found"),
+        (status = 200, description = "Enrolment updated", body = i64),
+        (status = 404, description = "Enrolment not found"),
     )
 )]
-pub async fn update_course(
+pub async fn update_enrolment(
     State(state): State<Arc<AppState>>,
     Path(id): Path<i64>,
-    Json(payload): Json<CreateCourse>,
+    Json(payload): Json<CreateEnrolment>,
 ) -> Result<Json<i64>, AppError> {
-    let updated_id = CourseRepo::update(&state.pool, id, &payload)
+    let updated_id = EnrolmentRepo::update(&state.pool, id, &payload)
         .await
         .map_err(|err| AppError {
             status_code: StatusCode::BAD_REQUEST,
@@ -130,18 +132,18 @@ pub async fn update_course(
 
 #[utoipa::path(
     delete,
-    path = "/courses/{id}",
-    params(("id" = i64, Path, description = "Course ID")),
+    path = "/enrollments/{id}",
+    params(("id" = i64, Path, description = "Enrolment ID")),
     responses(
-        (status = 200, description = "Course deleted", body = i64),
-        (status = 404, description = "Course not found"),
+        (status = 200, description = "Enrolment deleted", body = i64),
+        (status = 404, description = "Enrolment not found"),
     )
 )]
-pub async fn delete_course(
+pub async fn delete_enrolment(
     State(state): State<Arc<AppState>>,
     Path(id): Path<i64>,
 ) -> Result<Json<i64>, AppError> {
-    let deleted_id = CourseRepo::delete(&state.pool, id)
+    let deleted_id = EnrolmentRepo::delete(&state.pool, id)
         .await
         .map_err(|err| AppError {
             status_code: StatusCode::BAD_REQUEST,
@@ -155,7 +157,7 @@ pub async fn delete_course(
         None => Err(AppError {
             status_code: StatusCode::NOT_FOUND,
             data: Json(Data {
-                message: String::from("Course not found"),
+                message: String::from("Enrolment not found"),
             }),
         }),
     }

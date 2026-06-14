@@ -10,7 +10,7 @@ pub struct Student {
     pub created_at: Option<chrono::NaiveDateTime>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateStudent {
     pub full_name: String,
     pub email: String,

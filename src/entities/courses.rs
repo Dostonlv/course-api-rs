@@ -4,7 +4,7 @@ use utoipa::ToSchema;
 
 use crate::entities::instructors::Instructor;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, FromRow, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, FromRow, ToSchema, Default)]
 pub struct Course {
     pub id: i64,
     pub title: String,
@@ -14,7 +14,7 @@ pub struct Course {
     pub instructor: Instructor,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateCourse {
     pub title: String,
     pub description: String,

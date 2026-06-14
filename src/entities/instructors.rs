@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, FromRow, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, FromRow, ToSchema, Default)]
 pub struct Instructor {
     pub id: i64,
     pub full_name: String,
@@ -10,7 +10,7 @@ pub struct Instructor {
     pub expertise: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateInstructor {
     pub full_name: String,
     pub email: String,
