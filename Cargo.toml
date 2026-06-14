@@ -1,0 +1,25 @@
+[package]
+name = "course-api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+argon2 = { version = "0.5.3", features = ["std"] }
+axum = { version = "0.8.9", features = ["http2"] }
+dotenvy = "0.15"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+sqlx = { version = "0.9", features = [
+    "runtime-tokio",
+    "tls-native-tls",
+    "postgres",
+    "migrate",
+    "sqlx-toml",
+    "json",
+    "chrono",
+] }
+tokio = { version = "1.52.3", features = ["full", "rt-multi-thread", "macros"] }
+tracing = "0.1.44"
+utoipa = { version = "5", features = ["chrono"] }
+chrono = { version = "0.4", features = ["serde"] }
