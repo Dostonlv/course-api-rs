@@ -1,5 +1,22 @@
-use sqlx::{Pool, Postgres};
+use anyhow::{Context, Ok};
+use config::Config;
+use sqlx::PgPool;
 
+pub mod config;
 pub struct AppState {
-    pub pool: Pool<Postgres>,
+    pub pool: PgPool,
+    pub config: Config,
+}
+
+impl AppState {
+    pub async fn new(config: Config) -> anyhow::Result<Self> {
+        let pool = PgPool::connect(&config.database_url)
+            .await
+            .context("failed on creating database pooling")?;
+        sqlx::migrate!("./migrations")
+            .run(&pool)
+            .await
+            .context("migration failed")?;
+        Ok(Self { pool: pool, config })
+    }
 }
